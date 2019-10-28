@@ -16,6 +16,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.camera.CameraPermissions.PermissionsRegistry;
 import io.flutter.view.TextureRegistry;
 
+
 /**
  * Platform implementation of the camera_plugin.
  *

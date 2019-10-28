@@ -131,6 +131,37 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           result.success(null);
           break;
         }
+      case "zoomIn":
+      {
+        try {
+          camera.zoomIn();
+          result.success(null);
+        } catch (CameraAccessException e) {
+          result.error("CameraAccess", e.getMessage(), null);
+        }
+        break;
+      }
+      case "zoomOut":
+      {
+        try {
+          camera.zoomOut();
+          result.success(null);
+        } catch (CameraAccessException e) {
+          result.error("CameraAccess", e.getMessage(), null);
+        }
+        break;
+      }
+      case "changeZoom":
+      {
+         try {
+             double step = call.argument("step");
+             camera.changeZoom(step);
+             result.success(null);
+         } catch (CameraAccessException e) {
+            result.error("CameraAccess", e.getMessage(), null);
+         }
+          break;
+      }
       default:
         result.notImplemented();
         break;
