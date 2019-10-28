@@ -537,6 +537,16 @@ public class Camera {
     setScalerCropRegion(captureRequestBuilder, zoom);
     cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
   }
+  public void turnOnTorch() throws CameraAccessException {
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+    captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
+    cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+  }
+  public void turnOffTorch() throws CameraAccessException {
+    captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
+    captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
+    cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+  }
 
   private void calculateZoom(double step) {
     zoomLevel += step;

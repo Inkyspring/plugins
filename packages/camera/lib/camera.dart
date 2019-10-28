@@ -595,4 +595,10 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> changeZoom(double step) async {
     await _channel.invokeMethod<void>('changeZoom', <String,dynamic>{'step':step});
   }
+  Future<void> turnOnTorch() async {
+    await _channel.invokeMethod<void>('turnOnTorch');
+  }
+  Future<void> turnOffTorch() async {
+    await _channel.invokeMethod<void>('turnOffTorch');
+  }
 }
