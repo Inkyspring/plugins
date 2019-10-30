@@ -549,20 +549,20 @@ public class Camera {
   }
 
   private void calculateZoom(double step) {
-    zoomLevel += step;
-
-    if (zoomLevel < 1d) {
-      zoomLevel = 1d;
-//      return;
-    }
-    if (zoomLevel > 5d) {
-      zoomLevel = 5d;
-//      return;
-    }
+//    zoomLevel += step;
+//
+//    if (zoomLevel < 1d) {
+//      zoomLevel = 1d;
+////      return;
+//    }
+//    if (zoomLevel > 5d) {
+//      zoomLevel = 5d;
+////      return;
+//    }
 
     Rect rect = cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
 
-    double ratio = (double) 1 / zoomLevel;
+    double ratio = (double) 1 / step;
     int croppedWidth = (int) (rect.width() - Math.round((double) rect.width() * ratio));
     int croppedHeight = (int) (rect.height() - Math.round((double) rect.height() * ratio));
     zoom =

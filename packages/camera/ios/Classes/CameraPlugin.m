@@ -208,7 +208,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 - (void)zoonIn;
 - (void)zoomOut;
-- (void)zoomStep:(NSNumber *)step;
+- (void)zoomStep:(double)step;
 @end
 
 @implementation FLTCam {
@@ -308,8 +308,15 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                                                             motionManager:_motionManager
                                                            cameraPosition:_captureDevice.position]];
 }
-- (void) zoomStep:(NSNumber *)step {
+- (void) zoomStep:(double) step {
+    [_captureDevice lockForConfiguration:NULL];
+    [[_captureDevice activeFormat] videoMaxZoomFactor];
+    [_captureDevice setVideoZoomFactor:[self calcZoom:step]];
+    [_captureDevice unlockForConfiguration];
+}
 
+- (double) calcZoom:(double) step {
+    return step * [[_captureDevice activeFormat] videoMaxZoomFactor] / 50 - ([[_captureDevice activeFormat] videoMaxZoomFactor] / 50 - 1);
 }
 
 - (void)setCaptureSessionPreset:(ResolutionPreset)resolutionPreset {
@@ -786,6 +793,26 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     }
   }
 }
+
+- (void)turnOnTorch {
+    if ([_captureDevice hasTorch]) {
+        BOOL locked = [_captureDevice lockForConfiguration:nil];
+        if (locked) {
+            _captureDevice.torchMode = AVCaptureTorchModeOn;
+            [_captureDevice unlockForConfiguration];
+        }
+    }
+}
+
+- (void)turnOffTorch {
+    if ([_captureDevice hasTorch]) {
+        BOOL locked = [_captureDevice lockForConfiguration:nil];
+        if (locked) {
+            _captureDevice.torchMode = AVCaptureTorchModeOff;
+            [_captureDevice unlockForConfiguration];
+        }
+    }
+}
 @end
 
 @interface CameraPlugin ()
@@ -910,14 +937,20 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"zoomOut" isEqualToString:call.method]) {
     [_camera zoomOut];
     result(nil);
-  } else {
+  } else if ([call.method isEqualToString:@"turnOnTorch"]) {
+      [_camera turnOnTorch];
+      result(nil);
+   } else if ([call.method isEqualToString:@"turnOffTorch"]) {
+       [_camera turnOffTorch];
+       result(nil);
+   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
 
     if ([@"takePicture" isEqualToString:call.method]) {
       [_camera captureToFile:call.arguments[@"path"] result:result];
-    } ([@"changeZoom" isEqualToString:call.method]) {
-      [_camera zoomStep:call.arguments[@"step"] result:result];
+    } else if ([@"changeZoom" isEqualToString:call.method]) {
+      [_camera zoomStep:[call.arguments[@"step"] doubleValue]];
     }else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
