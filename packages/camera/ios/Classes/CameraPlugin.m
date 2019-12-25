@@ -232,6 +232,17 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   }
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
+    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if (granted) {
+            } else {
+                NSString *title = @"请在iPhone的”设置-隐私-相机“选项中，允许App访问你的相机";
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:@"" delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil];
+                [alertView show];
+            }
+        });
+    }];
   _captureSession = [[AVCaptureSession alloc] init];
 
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
